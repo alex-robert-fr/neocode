@@ -38,4 +38,12 @@ impl Window
             }
         }
     }
+
+    pub fn line_render(&self)
+    {
+        for x in 0..100
+        {
+            print!("A");
+        }
+    }
 }

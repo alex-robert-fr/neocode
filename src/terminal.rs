@@ -43,9 +43,9 @@ impl Terminal {
         print!("{}", crossterm::cursor::MoveTo(x, y));
     }
 
-    pub fn clear_screen()
+    pub fn clear_line()
     {
-        print!("\x1b[2J");
+        print!("\x1b[2K");
     }
 
     pub fn flush() -> Result<(), Error>

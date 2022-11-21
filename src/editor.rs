@@ -45,7 +45,6 @@ impl Editor {
                     },
                 };
                 if is_enable == false {
-                    //Terminal::clear_screen();
                     break;
                 }
             }
@@ -72,14 +71,18 @@ impl Editor {
 
     fn refresh_screen(&self, window: &Window) -> Result<(), Error>
     {
-//        println!("{}, {}", &self.cursor_position.x, &self.cursor_position.y);
+        //println!("{}, {}", &self.cursor_position.x, &self.cursor_position.y);
         Terminal::cursor_position(&self.cursor_position);
-        window.render();
+        //Terminal::clear_line();
+        //window.render();
+        window.line_render();
+        
         /*
         for _ in 0..self.terminal.size.height{
-            print!("~\r");
+            println!("~\r");
         }
         */
+        
         Terminal::flush()
     }
 }
