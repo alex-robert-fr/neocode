@@ -1,6 +1,6 @@
 use crate::Terminal;
 use std::io::Error;
-use termion::event::Key;
+use crossterm::event::{KeyEvent, KeyCode, KeyModifiers, KeyEventKind, KeyEventState};
 
 #[derive(Default)]
 pub struct Position {
@@ -26,10 +26,22 @@ impl Default for Editor {
 
 impl Editor {
     pub fn run(&mut self) {
+        crossterm::terminal::enable_raw_mode().unwrap();
         loop {
-            //self.refresh_screen();
+            self.refresh_screen();
             if self.quit {
-                break;
+                println!("Hello");
+                crossterm::terminal::disable_raw_mode().unwrap();
+                let is_enable = match crossterm::terminal::is_raw_mode_enabled() {
+                    Ok(enable) => enable,
+                    Err(err) => {
+                        die(err);
+                        false
+                    },
+                };
+                if is_enable == false {
+                    break;
+                }
             }
             if let Err(error) = self.process_keypress() {
                 die(error);
@@ -40,10 +52,15 @@ impl Editor {
     fn process_keypress(&mut self) -> Result<(), Error> {
         let pressed_key = Terminal::read_key()?;
         match pressed_key {
-            Key::Ctrl('q') => self.quit = true,
+            KeyEvent {
+                code: KeyCode::Char('q'),
+                modifiers: KeyModifiers::CONTROL,
+                kind: KeyEventKind::Press,
+                state: KeyEventState::NONE,
+            } => self.quit = true,
             _ => (),
         }
-        println!("Press\r");
+        println!("Press");
         Ok(())
     }
 
