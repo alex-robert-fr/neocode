@@ -1,49 +1,50 @@
+use crate::terminal::Size;
 use crate::Terminal;
+use crate::Row;
 
 pub struct Window
 {
-    screen: Vec<Vec<char>>,
+    size: Size,
 }
 
 impl Window
 {
     pub fn default(terminal: &Terminal) -> Self
     {
-
-        let mut screen = Vec::new();
-        for _ in 0..terminal.size.height
-        {
-            let mut line = Vec::new();
-            for _ in 0..terminal.size.width
-            {
-                line.push(' ');
-            }
-            screen.push(line);
-        }
         Self{
-            screen
+            size: Size {
+                width: terminal.size.width,
+                height: terminal.size.height,
+            }
         }
     }
     pub fn render(&self)
     {
-        for y in self.screen.iter()
+        for _ in 0..self.size.height
         {
-            for (index, x) in y.iter().enumerate()
+            for x in 0..self.size.width
             {
-                if index == 0 {
+                if x == 0 {
                     print!("~");
                 } else {
-                    print!("{x}");
+                    print!(" ");
                 }
             }
         }
     }
 
-    pub fn line_render(&self)
+    pub fn line_render(&self, text: Option<&Row>)
     {
-        for x in 0..100
+        if let Some(text) = text
         {
-            print!("A");
+            print!("f{}", text.string);
+        }
+        else
+        {
+            for x in 0..100
+            {
+                print!("A");
+            }
         }
     }
 }

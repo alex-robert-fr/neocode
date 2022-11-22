@@ -1,6 +1,6 @@
 pub struct Row
 {
-    string: String
+    pub string: String
 }
 
 impl Row
@@ -9,6 +9,12 @@ impl Row
     {
         Self {
             string: String::new()
+        }
+    }
+    pub fn new(text: &str) -> Self
+    {
+        Self {
+            string: String::from(text)
         }
     }
 }

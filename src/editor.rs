@@ -1,5 +1,6 @@
 use crate::Terminal;
 use crate::Window;
+use crate::Document;
 use std::io::{stdout, Write, Error};
 use crossterm::event::{KeyEvent, KeyCode, KeyModifiers, KeyEventKind, KeyEventState};
 
@@ -13,7 +14,9 @@ pub struct Editor
 {
     quit: bool,
     cursor_position: Position,
+    document: Document,
     terminal: Terminal,
+    offset: Position,
 }
 
 impl Default for Editor
@@ -23,7 +26,9 @@ impl Default for Editor
         Self {
             quit: false,
             cursor_position: Position::default(),
+            document: Document::default(),
             terminal: Terminal::default().expect("Failed to initialize terminal"),
+            offset: Position::default(),
         }
     }
 }
@@ -33,6 +38,7 @@ impl Editor {
     {
         crossterm::terminal::enable_raw_mode().unwrap();
         let window = Window::default(&self.terminal);
+        window.render();
         loop {
             self.refresh_screen(&window);
             if self.quit {
@@ -64,6 +70,30 @@ impl Editor {
                 kind: KeyEventKind::Press,
                 state: KeyEventState::NONE,
             } => self.quit = true,
+            KeyEvent {
+                code: KeyCode::Down,
+                modifiers: KeyModifiers::NONE,
+                kind: KeyEventKind::Press,
+                state: KeyEventState::NONE,
+            } => self.cursor_position.y = self.cursor_position.y.saturating_add(1),
+            KeyEvent {
+                code: KeyCode::Up,
+                modifiers: KeyModifiers::NONE,
+                kind: KeyEventKind::Press,
+                state: KeyEventState::NONE,
+            } => self.cursor_position.y = self.cursor_position.y.saturating_sub(1),
+            KeyEvent {
+                code: KeyCode::Left,
+                modifiers: KeyModifiers::NONE,
+                kind: KeyEventKind::Press,
+                state: KeyEventState::NONE,
+            } => self.cursor_position.x = self.cursor_position.x.saturating_sub(1),
+            KeyEvent {
+                code: KeyCode::Right,
+                modifiers: KeyModifiers::NONE,
+                kind: KeyEventKind::Press,
+                state: KeyEventState::NONE,
+            } => self.cursor_position.x = self.cursor_position.x.saturating_add(1),
             _ => (),
         }
         Ok(())
@@ -74,8 +104,7 @@ impl Editor {
         //println!("{}, {}", &self.cursor_position.x, &self.cursor_position.y);
         Terminal::cursor_position(&self.cursor_position);
         //Terminal::clear_line();
-        //window.render();
-        window.line_render();
+        window.line_render(self.document.row(self.cursor_position.y));
         
         /*
         for _ in 0..self.terminal.size.height{
