@@ -102,9 +102,10 @@ impl Editor {
     fn refresh_screen(&self, window: &Window) -> Result<(), Error>
     {
         //println!("{}, {}", &self.cursor_position.x, &self.cursor_position.y);
-        Terminal::cursor_position(&self.cursor_position);
+        Terminal::cursor_position(&Position {x: 0, y: self.cursor_position.y});
         //Terminal::clear_line();
         window.line_render(self.document.row(self.cursor_position.y));
+        Terminal::cursor_position(&self.cursor_position);
         
         /*
         for _ in 0..self.terminal.size.height{
@@ -114,6 +115,27 @@ impl Editor {
         
         Terminal::flush()
     }
+/*
+    fn draw_row(&self, row: &Row)
+    {
+        let width = self.terminal.size().width;
+        let start = self.offset.x;
+        let end = self.offset.x + width;
+        let row = row.line_render(start, end);
+    }
+
+    fn draw_rows(&self)
+    {
+        let height = self.terminal.size().height;
+        for terminal_row in 0..height - 1
+        {
+            if let Some(row) = self.document.row(terminal_row)
+            {
+                self.draw_row(row);
+            }
+        }
+    }
+    */
 }
 
 fn die(err: Error)

@@ -37,7 +37,7 @@ impl Window
     {
         if let Some(text) = text
         {
-            print!("f{}", text.string);
+            print!("{}\r", text.string);
         }
         else
         {
